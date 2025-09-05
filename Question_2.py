@@ -40,7 +40,7 @@ def process_temperature_data():
     return melted_data
 
 def calculate_seasonal_averages(data):
-    # Calculate average temperature for each season
+    # Calculating average temperature for each season
     seasonal_avg = data.groupby('SEASON')['TEMPERATURE'].mean().round(1)
     
     # Write to file
@@ -49,17 +49,47 @@ def calculate_seasonal_averages(data):
             f.write(f"{season}: {temp}°C\n")
 
 def find_largest_temp_range(data):
-    # Group by station and calculate min, max, and range
+    # Grouping by station and calculate min, max, and range
     station_stats = data.groupby('STATION_NAME')['TEMPERATURE'].agg(['min', 'max'])
     station_stats['range'] = station_stats['max'] - station_stats['min']
     
-    # Find the maximum range
+    # Finding the maximum range
     max_range = station_stats['range'].max()
     
-    # Find all stations with this maximum range
+    # Finding all stations with this maximum range
     max_range_stations = station_stats[station_stats['range'] == max_range]
     
-    # Write to file
+    # Writing to file
     with open("largest_temp_range_station.txt", "w") as f:
         for station, row in max_range_stations.iterrows():
             f.write(f"{station}: Range {row['range']:.1f}°C (Max: {row['max']:.1f}°C, Min: {row['min']:.1f}°C)\n")
+
+
+
+def main():
+    # Creation og temperatures folder if it doesn't exist
+    if not os.path.exists("temperatures"):
+        os.makedirs("temperatures")
+        print("Created 'temperatures' folder. Please add your CSV files to this folder and run the program again.")
+        return
+    
+    # Checking if there are any CSV files in the temperatures folder
+    csv_files = glob.glob("temperatures/*.csv")
+    if not csv_files:
+        print("No CSV files found in the 'temperatures' folder. Please add your data files and run the program again.")
+        return
+    
+    # Processing the data
+    print("Processing temperature data...")
+    data = process_temperature_data()
+    
+    # Performing analyses
+    print("Calculating seasonal averages...")
+    calculate_seasonal_averages(data)
+    
+    print("Finding largest temperature range...")
+    find_largest_temp_range(data)
+    
+
+if __name__ == "__main__":
+    main()
