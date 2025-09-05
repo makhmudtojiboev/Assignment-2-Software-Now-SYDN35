@@ -1,4 +1,6 @@
-# crypto_files.py
+# Mohammed Abir Chowdhury - s397008
+# Makhmud Tojiboev - s395965
+
 import os, json
 from pathlib import Path
 
