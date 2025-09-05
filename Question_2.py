@@ -43,7 +43,7 @@ def calculate_seasonal_averages(data):
     # Calculating average temperature for each season
     seasonal_avg = data.groupby('SEASON')['TEMPERATURE'].mean().round(1)
     
-    # Write to file
+    # Writing to file
     with open("average_temp.txt", "w") as f:
         for season, temp in seasonal_avg.items():
             f.write(f"{season}: {temp}°C\n")
@@ -64,10 +64,30 @@ def find_largest_temp_range(data):
         for station, row in max_range_stations.iterrows():
             f.write(f"{station}: Range {row['range']:.1f}°C (Max: {row['max']:.1f}°C, Min: {row['min']:.1f}°C)\n")
 
-
+def find_temperature_stability(data):
+    # Calculation standard deviation for each station
+    station_std = data.groupby('STATION_NAME')['TEMPERATURE'].std()
+    
+    # Finding min and max standard deviations
+    min_std = station_std.min()
+    max_std = station_std.max()
+    
+    # Finding stations with min and max standard deviations
+    most_stable = station_std[station_std == min_std]
+    most_variable = station_std[station_std == max_std]
+    
+    # Writing to file
+    with open("temperature_stability_stations.txt", "w") as f:
+        f.write("Most Stable:\n")
+        for station, std in most_stable.items():
+            f.write(f"  {station}: StdDev {std:.1f}°C\n")
+        
+        f.write("Most Variable:\n")
+        for station, std in most_variable.items():
+            f.write(f"  {station}: StdDev {std:.1f}°C\n")
 
 def main():
-    # Creation og temperatures folder if it doesn't exist
+    # Creating temperatures folder if it doesn't exist
     if not os.path.exists("temperatures"):
         os.makedirs("temperatures")
         print("Created 'temperatures' folder. Please add your CSV files to this folder and run the program again.")
@@ -90,6 +110,13 @@ def main():
     print("Finding largest temperature range...")
     find_largest_temp_range(data)
     
+    print("Analyzing temperature stability...")
+    find_temperature_stability(data)
+    
+    print("Analysis complete! Results saved to:")
+    print("- average_temp.txt")
+    print("- largest_temp_range_station.txt")
+    print("- temperature_stability_stations.txt")
 
 if __name__ == "__main__":
     main()
