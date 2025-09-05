@@ -1,0 +1,4 @@
+Most Stable:
+  HORN-ISLAND: StdDev 1.2°C
+Most Variable:
+  RUTHERGLEN-RESEARCH: StdDev 6.9°C
